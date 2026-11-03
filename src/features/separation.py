@@ -8,13 +8,22 @@ import numpy as np
 import pandas as pd
 
 
-def compute_wr_db_separation(wr_tracking, db_tracking, join_on=("gameId", "playId", "frameId")):
+def compute_wr_db_separation(wr_tracking, db_tracking, join_on=None):
     """
     Merges WR and DB tracking on temporal frames and computes:
       - Euclidean distance (separation)
       - Closing / opening velocity (d_separation / dt)
       - Relative orientation and angle
     """
+    if join_on is None:
+        if "game_id" in wr_tracking.columns:
+            join_on = ["game_id", "play_id"]
+        else:
+            join_on = ["gameId", "playId"]
+            
+        time_col = "frame_id" if "frame_id" in wr_tracking.columns else ("time_s" if "time_s" in wr_tracking.columns else "time")
+        join_on.append(time_col)
+        
     merged = pd.merge(
         wr_tracking,
         db_tracking,

@@ -14,6 +14,56 @@ RAW_DIR = DATA_DIR / "raw"
 PROCESSED_DIR = DATA_DIR / "processed"
 
 
+def load_combine_metadata(raw_dir=RAW_DIR):
+    """Loads players, combine results, and career success tables."""
+    raw_dir = Path(raw_dir)
+    players = pd.read_csv(raw_dir / "players.csv")
+    combine_results = pd.read_csv(raw_dir / "combine_results.csv")
+    career = pd.read_csv(raw_dir / "player_career_successes.csv")
+    
+    # Merge on nfl_id
+    meta = players.merge(combine_results, on="nfl_id", how="left", suffixes=("", "_results"))
+    meta = meta.merge(career, on="nfl_id", how="left")
+    return meta
+
+
+def load_combine_drill_tracks(drill_types=None, drill_names=None, raw_dir=RAW_DIR):
+    """
+    Loads combine tracking filtered by specific drill types or drill names.
+    e.g. drill_types=['THREE_CONE_DRILL', 'SHORT_SHUTTLE', 'SKILL_DRILLS_WR']
+    """
+    raw_dir = Path(raw_dir)
+    file_path = raw_dir / "combine_tracking.csv"
+    if not file_path.exists():
+        raise FileNotFoundError(f"Missing {file_path}")
+        
+    df = pd.read_csv(file_path)
+    if drill_types is not None:
+        df = df[df["drill_type"].isin(drill_types)]
+    if drill_names is not None:
+        df = df[df["drill_name"].isin(drill_names)]
+    return df
+
+
+def load_game_tracking(year=2023, sample_plays=None, raw_dir=RAW_DIR):
+    """Loads in-game NGS tracking data for a specific season."""
+    raw_dir = Path(raw_dir)
+    file_path = raw_dir / f"game_tracking_{year}.csv"
+    if not file_path.exists():
+        raise FileNotFoundError(f"Missing {file_path}")
+        
+    if sample_plays is not None:
+        # Stream read only requested plays for fast memory-efficient loading
+        chunks = []
+        for chunk in pd.read_csv(file_path, chunksize=100000):
+            matched = chunk[chunk["play_id"].isin(sample_plays)]
+            if len(matched) > 0:
+                chunks.append(matched)
+        return pd.concat(chunks, ignore_index=True) if chunks else pd.DataFrame()
+    
+    return pd.read_csv(file_path)
+
+
 def generate_synthetic_route_play(route_type="comeback", duration_sec=4.0, fps=10):
     """
     Generates synthetic high-fidelity 10Hz tracking data of a WR route cut
@@ -61,27 +111,28 @@ def generate_synthetic_route_play(route_type="comeback", duration_sec=4.0, fps=1
     db_y[stem_frames + lag_frames:] = 10.5 + np.linspace(0, 3.0, overshoot_frames)
     
     df_wr = pd.DataFrame({
-        "gameId": 2024090800,
-        "playId": 101,
-        "nflId": 99001,
-        "frameId": np.arange(1, n_frames + 1),
+        "game_id": 2024090800,
+        "play_id": 101,
+        "nfl_id": 99001,
+        "frame_id": np.arange(1, n_frames + 1),
         "time_s": t,
-        "displayName": "Target WR (Elite Decel)",
+        "display_name": "Target WR (Elite Decel)",
         "position": "WR",
         "x": wr_x,
         "y": wr_y,
     })
     
     df_db = pd.DataFrame({
-        "gameId": 2024090800,
-        "playId": 101,
-        "nflId": 99002,
-        "frameId": np.arange(1, n_frames + 1),
+        "game_id": 2024090800,
+        "play_id": 101,
+        "nfl_id": 99002,
+        "frame_id": np.arange(1, n_frames + 1),
         "time_s": t,
-        "displayName": "Cover DB",
+        "display_name": "Cover DB",
         "position": "CB",
         "x": db_x,
         "y": db_y,
     })
     
     return df_wr, df_db
+
