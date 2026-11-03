@@ -24,11 +24,15 @@ Traditional scouting at the **NFL Scouting Combine** has historically over-index
 
 ## 📊 Core Visualizations
 
-### 1. Route Break Kinematics Overlay
+### 1. The Translation Proved: Combine Braking (BRK+) vs. In-Game Route Separation
+Validating that players with elite deceleration at the Combine generate consistently superior separation on in-game breaking routes (Hitch, In, Out, Slant):
+![BRK+ vs In-Game Separation](reports/figures/brk_plus_vs_ingame_separation.png)
+
+### 2. Route Break Kinematics Overlay
 Real-time tracking of route inflections, where color intensity maps directly to braking force ($a_t$):
 ![Route Break Overlay](reports/figures/field_route_break_overlay.png)
 
-### 2. WR Braking vs. Created Separation Over Time
+### 3. WR Braking vs. Created Separation Over Time
 Visualizing the exact moment peak deceleration triggers the DB overshoot and expands the passing window:
 ![Separation Dynamics](reports/figures/separation_dynamics_curve.png)
 
