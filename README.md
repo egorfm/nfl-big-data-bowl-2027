@@ -1,6 +1,10 @@
 # 🏈 The Deceleration Engine: Quantifying Route Separation Through Combine Braking Dynamics
 
 <p align="center">
+  <b>Language:</b> <b>English</b> | <a href="README_RU.md">Русский</a>
+</p>
+
+<p align="center">
   <img src="https://img.shields.io/badge/Competition-NFL%20Big%20Data%20Bowl%202027-013369?style=for-the-badge&logo=nfl&logoColor=white" alt="NFL Big Data Bowl 2027" />
   <img src="https://img.shields.io/badge/Track-Analytics%20%26%20Scouting-107C41?style=for-the-badge" alt="Analytics Track" />
   <img src="https://img.shields.io/badge/Python-3.10+-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python 3.10+" />
@@ -73,25 +77,25 @@ Synchronized time series capturing the ~250ms defensive reaction lag and the ope
 ## 🧮 Mathematical & Kinematic Formulations
 
 ### 1. Tangential Acceleration ($a_t$) & Braking Isolation
-To isolate true longitudinal braking force from centripetal turning force:
+Isolating true longitudinal braking force from centripetal turning forces along the route trajectory:
 
-$$a_t = \frac{\vec{v} \cdot \vec{a}}{\|\vec{v}\|} = \frac{v_x a_x + v_y a_y}{\sqrt{v_x^2 + v_y^2}}$$
-
-* **$a_t > 0$:** Acceleration / Propulsive phase
-* **$a_t < -1.5 \text{ yd/s}^2$:** Active deceleration / Braking threshold
+<p align="center">
+  <img src="reports/figures/formula_tangential_acceleration_en.png" alt="Tangential Acceleration & Braking Isolation" width="95%" />
+</p>
 
 ### 2. Centripetal Turning Acceleration ($a_n$) & Path Curvature ($\kappa$)
+Quantifying lateral cut sharpness and cornering forces decoupled from longitudinal braking:
 
-$$a_n = \frac{|v_x a_y - v_y a_x|}{\sqrt{v_x^2 + v_y^2}}, \quad \kappa = \frac{|v_x a_y - v_y a_x|}{(v_x^2 + v_y^2)^{3/2}}$$
+<p align="center">
+  <img src="reports/figures/formula_centripetal_curvature_en.png" alt="Centripetal Acceleration & Route Curvature" width="95%" />
+</p>
 
 ### 3. Standardized Metric: `BRK+` (Braking Rate Plus)
-Conditioned on player body mass ($m$), entry speed ($v_{entry}$), and route angle:
+Conditioned on player body mass ($m$), entry speed ($v_{\text{entry}}$), and route angle:
 
-$$\text{BRK+} = 100 + 15 \times \left( \frac{\mu_{\text{league}} - a_{t, \text{player}}}{\sigma_{\text{league}}} \right)$$
-
-* **$\text{BRK+} \ge 115$:** **Elite Tier** (Top 10% separation creators)
-* **$100$:** **League Average Baseline**
-* **$\text{BRK+} < 85$:** **Sluggish Cutter** (Heavy recovery risk against press coverage)
+<p align="center">
+  <img src="reports/figures/formula_brk_plus_en.png" alt="BRK+ Metric Standardized Distribution" width="95%" />
+</p>
 
 ---
 
@@ -105,10 +109,11 @@ nfl-big-data-bowl-2027/
 ├── notebooks/
 │   └── the_deceleration_engine.ipynb   # Complete Kaggle submission notebook (<2,000 words)
 ├── reports/
-│   └── figures/           # Publication-quality charts and field diagrams
+│   └── figures/           # Publication-quality charts, field diagrams & formula cards
 ├── scripts/
 │   ├── analyze_real_combine.py          # 10Hz Combine 3-Cone kinematics extractor
-│   └── build_deceleration_engine_dataset.py  # End-to-end master merge & scoring
+│   ├── build_deceleration_engine_dataset.py  # End-to-end master merge & scoring
+│   └── generate_formula_cards.py        # Illustrative formula card generator (EN/RU)
 ├── src/
 │   ├── data/
 │   │   └── loader.py      # Data loading, filtering & synthetic mock generators
@@ -122,7 +127,8 @@ nfl-big-data-bowl-2027/
 │       └── plots.py       # Analytical plotting routines
 ├── run_pipeline.py        # One-click execution pipeline
 ├── requirements.txt       # Dependencies
-└── README.md
+├── README.md              # English documentation
+└── README_RU.md           # Русская версия документации
 ```
 
 ---
